@@ -1,4 +1,3 @@
-
 """An app to match your list of company names with UK Companies House and extract company numbers first.
 """
 import pandas as pd
@@ -94,25 +93,25 @@ def main():
         df1 = data
         os.chdir('/Users/staff/Desktop')
         df2 = pd.read_csv("/Users/staff/Desktop/CH_file.csv")
+        df1.columns = ['CompanyName']
+        df2.columns = ['CompanyName']
         df1['CompanyName'] = df1['CompanyName'].astype('str')
         df2['CompanyName'] = df2['CompanyName'].astype('str')
         df1['name1'] = [preprocess_name(x) if x == x else '' for x in df1['CompanyName']]
         df2['name1'] = [preprocess_name(x) for x in df2['CompanyName']]
         df1['name'] = df1['name1'].apply(lambda x: difflib.get_close_matches(x, df2['name1'], cutoff = 1.0))
         df3 = pd.merge(df1, df2, left_on = 'name1', right_on = 'name1', how = 'left', indicator = True)
-       	st.dataframe(df3.head(10))
+        st.write(df3.astype('object'))
+        st.success("Matching Completed!")
         csv = df3.to_csv(index=False)
         b64 = base64.b64encode(csv.encode()).decode()  # some strings <-> bytes conversions necessary here
-        href = f'<a href="data:file/csv;base64,{b64}">Download CSV File</a> (right-click and save as &lt;some_name&gt;.csv)'
+        #href = f'<a href="data:file/csv;base64,{b64}">Download CSV File</a> (right-click and save as &lt;some_name&gt;.csv)'
+        href = f'<a href="data:file/csv;base64,{b64}" download="CompanyMatching.csv">Download CSVFile</a>'
         st.markdown(href, unsafe_allow_html=True)
 
     file.close()
 
 
 main()
-
-
-
-
 
 
